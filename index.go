@@ -1,13 +1,23 @@
 package gallery
 
 import (
-	"context"
-	"fmt"
+	"bytes"
+	//"context"
+	//"fmt"
+
+	"encoding/base64"
 	"html/template"
+	"image"
+	"image/jpeg"
+	"log"
 	"net/http"
+	"os"
+
+	//"cloud.google.com/go/datastore"
 )
 
 var indexTmpl = template.Must(template.ParseFiles("./view/index.html"))
+
 
 // IndexTemplate is a structure of index template.
 type IndexTemplate struct {
@@ -15,31 +25,30 @@ type IndexTemplate struct {
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	ctx := context.Background()
-	client, err := datastore.NewClient(ctx, "wwgt-codelabs")
+	file, err := os.Open("./images/sample.jpg")
+	defer file.Close()
 	if err != nil {
-		http.Error(w, fmt.Sprint(err), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	var imgs []*Images
-	wc := client.Bucket(bucket).Object(object).NewWriter(ctx)
-	keys, err := client.GetAll(ctx, wc, &img)
+	img, _, err := image.Decode(file)
 	if err != nil {
-		http.Error(w, fmt.Sprint(err), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	for i := 0; i < len(img); i++ {
-		img[i].ID = keys[i].ID
-	}
+	writeImageWithTemplate(w, "index", &img)
+}
 
-	idxt := &IndexTemplate{
-		Image:     image,
-		Images:    imgs,
+func writeImageWithTemplate(w http.ResponseWriter, tmpl string, img *image.Image) {
+	buffer := new(bytes.Buffer)
+	if err := jpeg.Encode(buffer, *img, nil); err != nil {
+		log.Fatalln("Unable to encode image.")
 	}
-
-	if err := indexTmpl.Execute(w, idxt); err != nil {
-		http.Error(w, fmt.Sprint(err), http.StatusInternalServerError)
+	str := base64.StdEncoding.EncodeToString(buffer.Bytes())
+	data := map[string]interface{}{"Title": tmpl, "Image": str}
+	if err :=indexTmpl.ExecuteTemplate(w, tmpl+".html", data); err != nil {
+		log.Fatalln("Unable to execute template.")
 	}
 }

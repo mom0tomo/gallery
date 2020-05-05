@@ -2,16 +2,17 @@ package main
 
 import (
 	"fmt"
+	"github.com/mom0tomo/gallery"
 	"log"
 	"net/http"
 	"os"
 
-	"github.com/mom0tomo/chichichimaru_gallery/gallery"
+	_ "github.com/mom0tomo/gallery"
 )
 
 func main() {
-	http.HandleFunc("/post", garalley.Post)
-	http.HandleFunc("/index", garalley.Index)
+	http.HandleFunc("/post", gallery.Post)
+	http.HandleFunc("/index", gallery.Index)
 
 	port := os.Getenv("PORT")
 	if port == "" {

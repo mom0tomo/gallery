@@ -1,4 +1,4 @@
-module github.com/mom0tomo/chichichimaru_gallery
+module github.com/mom0tomo/gallery
 
 go 1.14
 

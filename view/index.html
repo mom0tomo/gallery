@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
 
-<div class="messages">
-    {{range .Images}}
-        <div class="message">
-            <p class="message-text">{{.Image}}</p>
-        </div>
-    {{end}}
+<div class="images">
+    <form action="/post" enctype="multipart/form-data" method="post">
+        <input type="file" name="upload" id="upload" multiple="multiple">
+        <input type="submit" value="Upload file" />
+    </form>
+    <img src="data:image/jpg;base64,{{ .Image }}" />
 </div>
 </body>
 </html>
