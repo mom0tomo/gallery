@@ -2,15 +2,45 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style type="text/css">
+        html {
+            font-size: 625%;
+        }
+        body {
+            font-size: .16em;
+        }
+        .images {
+            margin: auto;
+        }
+        .images .image {
+            margin: 20% auto;
+            display: flex;
+        }
+        img {
+            width: 500px;
+            display: inline-flex;
+            margin: auto;
+        }
+        .images .form {
+            margin: 0 auto;
+            padding-top: 10px;
+            width: 320px;
+        }
+    </style>
 </head>
 <body>
 
 <div class="images">
-    <form action="/post" enctype="multipart/form-data" method="post">
-        <input type="file" name="upload" id="upload" multiple="multiple">
-        <input type="submit" value="Upload file" />
-    </form>
-    <img src="data:image/jpg;base64,{{ .Image }}" />
+    <div class="form">
+        <form method="post" enctype="multipart/form-data" action="/images{{if .}}/{{.ID}}{{end}}">
+            <div class="form-group">
+                <input class="form-control" name="image" id="image" type="file">
+            </div>
+        </form>
+    </div>
+    <div class="image">
+        <img src="data:image/jpg;base64,{{ .Image }}" />
+    </div>
 </div>
 </body>
 </html>
